@@ -1,4 +1,13 @@
 from pyhtml import *
 
-print(f"{Text('as')}")
+html = HTML(
+    title='Document',
+    value=[
+        FlexCol([
+            Heading1('hello')
+        ])
+    ]
+)
+
+print(html)
 
