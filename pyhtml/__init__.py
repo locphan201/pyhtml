@@ -1,4 +1,5 @@
 from typing import List, Dict, Any
+from .theme import *
 
 class Base:
     def __init__(self, **kwargs) -> None:
@@ -71,13 +72,27 @@ class Script(Base):
     def __init__(self, **kwargs) -> None:
         super().__init__(tag='script', **kwargs)
 
+class Style(Base):
+    def __init__(self, **kwargs):
+        super().__init__(tag='style', **kwargs)
+
 class Head(Base):
     def __init__(self, **kwargs) -> None:
+        theme_color = f'''
+            --light-primary: {DEFAULT_LIGHT_COLOR_SCHEME.PRIMARY};
+            --light-secondary: {DEFAULT_LIGHT_COLOR_SCHEME.SECONDARY};
+            --light-tertiary: {DEFAULT_LIGHT_COLOR_SCHEME.TERTIARY};
+            --dark-primary: {DEFAULT_DARK_COLOR_SCHEME.PRIMARY};
+            --dark-secondary: {DEFAULT_DARK_COLOR_SCHEME.SECONDARY};
+            --dark-tertiary: {DEFAULT_DARK_COLOR_SCHEME.TERTIARY};
+        '''
+
         base_value = [
             Meta(charset='UTF-8'),
             Meta(name='viewport', content="width=device-width, initial-scale=1.0"),
             Link(rel='stylesheet', href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'),
             Script(src='https://unpkg.com/@tailwindcss/browser@4'),
+            Style(type='text/tailwindcss', children=f'@theme{{{theme_color}}}'),
             Title(title=kwargs.get('title', 'Document'))
         ]
 
