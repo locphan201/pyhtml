@@ -8,9 +8,13 @@ class Base:
         self._class_names = kwargs.get('class_names', [])
         self._attrs = {}
         for key, value in kwargs.items():
-            if key in ['tag', 'children', 'class_names']:
+            if key in ['tag', 'id', 'children', 'class_names']:
                 continue
             self._attrs[key] = value
+
+    @property
+    def id(self) -> str:
+        return self._id
 
     @property
     def tag(self) -> str:
@@ -28,6 +32,24 @@ class Base:
     def attrs(self) -> Dict[str, str]:
         return self._attrs
     
+    def set(self, key: str, value: str) -> None:
+        self._attrs[key] = value
+
+    def add_child(self, child: Any) -> bool:
+        if isinstance(self._children, str):
+            if isinstance(child, str):
+                self._children += child
+            else:
+                print(f'Error - Tag {self._tag}: Cannot add Object into this parent since the content is a string!')
+                return False
+
+        if isinstance(child, str):
+            print(f'Error - Tag {self._tag}: Cannot add a string into this parent since the content is a list of Object!')
+            return False
+        else:
+            self._children.append(child)
+            return True
+
     def __repr__(self) -> str:
         return f'{self}'
     
@@ -55,7 +77,6 @@ class Base:
             return f"{indent}<{self._tag}{classes}{attrs}>\n{inner_html}{indent}</{self._tag}>\n"
         else:
             return f"{indent}<{self._tag}{classes}{attrs}></{self._tag}>\n"
-
 class Title(Base):
     def __init__(self, title: str = 'Document'):
         super().__init__(tag='title', children=title)
@@ -79,12 +100,12 @@ class Style(Base):
 class Head(Base):
     def __init__(self, **kwargs) -> None:
         theme_color = f'''
-            --light-primary: {DEFAULT_LIGHT_COLOR_SCHEME.PRIMARY};
-            --light-secondary: {DEFAULT_LIGHT_COLOR_SCHEME.SECONDARY};
-            --light-tertiary: {DEFAULT_LIGHT_COLOR_SCHEME.TERTIARY};
-            --dark-primary: {DEFAULT_DARK_COLOR_SCHEME.PRIMARY};
-            --dark-secondary: {DEFAULT_DARK_COLOR_SCHEME.SECONDARY};
-            --dark-tertiary: {DEFAULT_DARK_COLOR_SCHEME.TERTIARY};
+            --color-light-primary: {DEFAULT_LIGHT_COLOR_SCHEME.PRIMARY};
+            --color-light-secondary: {DEFAULT_LIGHT_COLOR_SCHEME.SECONDARY};
+            --color-light-tertiary: {DEFAULT_LIGHT_COLOR_SCHEME.TERTIARY};
+            --color-dark-primary: {DEFAULT_DARK_COLOR_SCHEME.PRIMARY};
+            --color-dark-secondary: {DEFAULT_DARK_COLOR_SCHEME.SECONDARY};
+            --color-dark-tertiary: {DEFAULT_DARK_COLOR_SCHEME.TERTIARY};
         '''
 
         base_value = [
@@ -105,8 +126,12 @@ class Head(Base):
 
 class Body(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['w-dvw', 'h-dvh', 'flex', 'flex-col', 'justify-center', 'items-center', 'overflow-x-hidden', 'overflow-y-auto'])
+        class_names = [
+            'w-dvw', 'h-dvh', 'flex', 'flex-col', 
+            'justify-center', 'items-center', 'overflow-x-hidden', 'overflow-y-auto',
+            'bg-light-primary', 'dark:bg-dark-primary'
+        ]
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='body', 
             class_names=class_names,
@@ -119,9 +144,10 @@ class HTML(Base):
             tag='html',
             lang='en',
             children=[
-                Head(title=kwargs.get('title', 'Document')),
-                Body(children=kwargs.get('children', []))
+                Head(title=kwargs.pop('title', 'Document')),
+                Body(children=kwargs.pop('children', []))
             ],
+            **kwargs
         )
 
     def _to_str(self, indent_level: int) -> str:
@@ -145,11 +171,15 @@ class HTML(Base):
 
 class Text(Base):
     def __init__(self, **kwargs) -> None:
-        super().__init__(tag='p', **kwargs)
+        class_names = ['text-light-tertiary', 'dark:text-dark-tertiary']
+        class_names.extend(kwargs.pop('class_names', []))
+        super().__init__(tag='p', class_names=class_names,**kwargs)
 
 class Label(Base):
     def __init__(self, **kwargs) -> None:
-        super().__init__(tag='label', **kwargs)
+        class_names = ['text-light-tertiary', 'dark:text-dark-tertiary']
+        class_names.extend(kwargs.pop('class_names', []))
+        super().__init__(tag='label', class_names=class_names,**kwargs)
 
 class Span(Base):
     def __init__(self, **kwargs) -> None:
@@ -157,8 +187,8 @@ class Span(Base):
 
 class Row(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['flex', 'justify-center', 'items-center', 'gap-2'])
+        class_names = ['flex', 'justify-center', 'items-center', 'gap-2']
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='div',
             class_names=class_names,
@@ -167,8 +197,8 @@ class Row(Base):
 
 class Column(Row):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.append('flex-col')
+        class_names = ['flex-col']
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             class_names=class_names,
             **kwargs
@@ -176,8 +206,12 @@ class Column(Row):
 
 class Input(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['rounded-lg', 'p-2.5', 'border'])
+        class_names = [
+            'rounded-lg', 'p-2.5', 'border',
+            'bg-light-primary', 'dark:bg-dark-primary',
+            'text-light-tertiary', 'dark:text-dark-tertiary'
+        ]
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='input', 
             class_names=class_names,
@@ -186,8 +220,8 @@ class Input(Base):
 
 class Form(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['flex', 'flex-col', 'justify-center', 'items-center', 'gap-2', 'border', 'rounded-lg', 'p-5'])
+        class_names = ['flex', 'flex-col', 'justify-center', 'items-center', 'gap-2', 'border', 'rounded-lg', 'p-5']
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='form', 
             class_names=class_names,
@@ -196,8 +230,8 @@ class Form(Base):
 
 class Anchor(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['cursor-pointer'])
+        class_names = ['cursor-pointer', 'text-light-tertiary', 'dark:text-dark-tertiary']
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='a', 
             class_names=class_names,
@@ -210,8 +244,13 @@ class A(Anchor):
 
 class Button(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['flex', 'justify-center', 'items-center', 'gap-2', 'rounded-lg', 'p-2.5', 'cursor-pointer', 'hover:opacity-75'])
+        class_names = [
+            'flex', 'justify-center', 'items-center', 'gap-2', 
+            'rounded-lg', 'p-2.5', 'cursor-pointer', 'hover:opacity-75',
+            'bg-light-secondary', 'dark:bg-dark-secondary',
+            'text-light-tertiary', 'dark:text-dark-tertiary'
+        ]
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='button', 
             class_names=class_names,
@@ -220,9 +259,13 @@ class Button(Base):
 
 class Icon(Span):
     def __init__(self, **kwargs) -> None:
-        class_names = kwargs.pop('class_names', [])
-        class_names.extend(['material-symbols-outlined'])
+        class_names = ['material-symbols-outlined']
+        class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             class_names=class_names,
             **kwargs
         )
+
+class Image(Base):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
   <head title="Document">
     <meta charset="UTF-8"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
@@ -7,12 +7,12 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style type="text/tailwindcss">
       @theme{
-            --light-primary: #fdfdfd;
-            --light-secondary: #1e90ff;
-            --light-tertiary: #1f1f1f;
-            --dark-primary: #1f1f1f;
-            --dark-secondary: #1e90ff;
-            --dark-tertiary: #fdfdfd
+            --color-light-primary: #fdfdfd;
+            --color-light-secondary: #1e90ff;
+            --color-light-tertiary: #1f1f1f;
+            --color-dark-primary: #1f1f1f;
+            --color-dark-secondary: #1e90ff;
+            --color-dark-tertiary: #fdfdfd;
         }
     </style>
     <title>
@@ -20,20 +20,20 @@
     </title>
   </head>
 
-  <body class="w-dvw h-dvh flex flex-col justify-center items-center overflow-x-hidden overflow-y-auto">
-    <div class="flex-col flex justify-center items-center gap-2">
+  <body class="w-dvw h-dvh flex flex-col justify-center items-center overflow-x-hidden overflow-y-auto bg-light-primary dark:bg-dark-primary">
+    <div class="flex justify-center items-center gap-2 flex-col">
       <form class="flex flex-col justify-center items-center gap-2 border rounded-lg p-5" action="/hello" method="POST">
-        <p>
+        <p class="text-light-tertiary dark:text-dark-tertiary">
           Form
         </p>
-        <input class="rounded-lg p-2.5 border" type="text"></input>
-        <input class="rounded-lg p-2.5 border" type="text"></input>
-        <input class="rounded-lg p-2.5 border" type="text"></input>
-        <button class="bg-blue-400 text-white flex justify-center items-center gap-2 rounded-lg p-2.5 cursor-pointer hover:opacity-75" type="submit">
+        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
+        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
+        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
+        <button class="flex justify-center items-center gap-2 rounded-lg p-2.5 cursor-pointer hover:opacity-75 bg-light-secondary dark:bg-dark-secondary text-light-tertiary dark:text-dark-tertiary bg-blue-400 text-white" type="submit">
           <span class="material-symbols-outlined">
             upload
           </span>
-          <p>
+          <p class="text-light-tertiary dark:text-dark-tertiary">
             upload
           </p>
         </button>
