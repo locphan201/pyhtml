@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 from .theme import *
+import uuid
 
 class Base:
     def __init__(self, **kwargs) -> None:
@@ -8,13 +9,9 @@ class Base:
         self._class_names = kwargs.get('class_names', [])
         self._attrs = {}
         for key, value in kwargs.items():
-            if key in ['tag', 'id', 'children', 'class_names']:
+            if key in ['tag', 'children', 'class_names']:
                 continue
             self._attrs[key] = value
-
-    @property
-    def id(self) -> str:
-        return self._id
 
     @property
     def tag(self) -> str:
@@ -77,6 +74,7 @@ class Base:
             return f"{indent}<{self._tag}{classes}{attrs}>\n{inner_html}{indent}</{self._tag}>\n"
         else:
             return f"{indent}<{self._tag}{classes}{attrs}></{self._tag}>\n"
+
 class Title(Base):
     def __init__(self, title: str = 'Document'):
         super().__init__(tag='title', children=title)
@@ -269,3 +267,54 @@ class Icon(Span):
 class Image(Base):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+class ToggleButton(Label):
+    def __init__(self, value: str = '', class_names: List[str] = []):
+        id = str(uuid.uuid4()).replace('-', '_')
+        temp = ['inline-flex', 'items-center', 'cursor-pointer']
+        temp.extend(class_names)
+        super().__init__(
+            class_names=temp,
+            children=[
+                Input(
+                    type='checkbox',
+                    value='',
+                    class_names=['sr-only', 'peer'],
+                    id=id,
+                ),
+                Base(
+                    tag='div',
+                    class_names=[
+                        'relative', 'w-11', 'h-6', 'bg-gray-200', 'peer-focus:outline-none', 'peer-focus:ring-4', 
+                        'peer-focus:ring-blue-300', 'dark:peer-focus:ring-blue-800', 'rounded-full', 'peer', 
+                        'dark:bg-gray-700', 'peer-checked:after:translate-x-full', 'rtl:peer-checked:after:-translate-x-full', 
+                        "peer-checked:after:border-white after:content-['']", 'after:absolute after:top-[2px]', 'after:start-[2px]', 
+                        'after:bg-white', 'after:border-gray-300', 'after:border', 'after:rounded-full', 'after:h-5', 'after:w-5', 
+                        'after:transition-all', 'dark:border-gray-600', 'peer-checked:bg-blue-600', 'dark:peer-checked:bg-blue-600'
+                    ],
+                ),
+                Span(
+                    class_names=['ms-3', 'text-sm', 'font-medium', 'text-light-tertiary', 'dark:text-dark-tertiary'],
+                    children=value
+                ),
+                Script(
+                    children=f'''
+if (localStorage.getItem('darkMode') === 'enabled') {{
+    document.documentElement.classList.add('dark');
+    document.getElementById("{id}").checked = true;
+}}
+
+// Add an event listener for the checkbox toggle
+document.getElementById("{id}").addEventListener("change", function() {{
+    if (document.getElementById("{id}").checked) {{
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('darkMode', 'enabled');
+    }} else {{
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('darkMode', 'disabled');
+    }}
+}});
+'''
+                )
+            ]
+        )
