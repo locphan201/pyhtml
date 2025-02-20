@@ -1,3 +1,5 @@
+# pyhtml/styles.py
+
 from typing import List, Literal
 
 class Styles:

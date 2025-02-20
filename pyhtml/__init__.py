@@ -1,7 +1,10 @@
-from typing import List, Dict, Any
+# pyhtml/__init__.py
+
+from typing import List, Dict, Any, Union
 from .theme import theme
 from .styles import *
 import uuid
+import os
 
 class Base:
     def __init__(self, **kwargs) -> None:
@@ -151,6 +154,16 @@ class HTML(Base):
             attrs = ' ' + ' '.join([f'{key}="{value}"' for key, value in self._attrs.items()])
 
         return f'<!DOCTYPE html>\n{indent}<{self._tag}{classes}{attrs}>\n{inner_html}{indent}</{self._tag}>\n'
+
+    def render(self, filename, reload: bool = True) -> str:
+        return self._to_str()
+
+    def save(self, filename, reload: bool = True) -> str:
+        if reload or not os.path.isfile(os.path.join('templates', filename)):
+            os.makedirs('templates', exist_ok=True)
+            with open(os.path.join('templates', filename), 'w', encoding='utf-8') as file:
+                file.write(str(self._to_str()))
+            return filename
 
 class Text(Base):
     def __init__(self, **kwargs) -> None:

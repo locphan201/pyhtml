@@ -1,3 +1,5 @@
+# pyhtml/theme.py
+
 from typing import List
 
 class ColorScheme:

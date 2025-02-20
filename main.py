@@ -34,7 +34,7 @@ def index():
             ])
         ]
     )
-    return render_template(save('index.html', html))
+    return render_template(html.render('index.html'))
 
 if __name__ == '__main__':
     app.run(
