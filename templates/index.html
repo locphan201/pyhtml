@@ -1,43 +1,90 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head title="Document">
     <meta charset="UTF-8"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"></link>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <style type="text/tailwindcss">
-      @theme{
-            --color-light-primary: #fdfdfd;
-            --color-light-secondary: #1e90ff;
-            --color-light-tertiary: #1f1f1f;
-            --color-dark-primary: #1f1f1f;
-            --color-dark-secondary: #1e90ff;
-            --color-dark-tertiary: #fdfdfd;
-        }
+    <style>
+      
+:root {
+    --color-primary: #fdfdfd;
+    --color-secondary: #1e90ff;
+    --color-tertiary: #1f1f1f;
+}
+
+.dark {
+    --color-primary: #1f1f1f;
+    --color-secondary: #1e90ff;
+    --color-tertiary: #fdfdfd;
+}
+
+.yellow-gray {
+    --color-primary: #242423;
+    --color-secondary: #FFB703;
+    --color-tertiary: #E0FBFC;
+}
+
+.cream {
+    --color-primary: #FFF7E6;
+    --color-secondary: #EE6C4D;
+    --color-tertiary: #2A2A2A;
+}
+
     </style>
     <title>
       Document
     </title>
   </head>
 
-  <body class="w-dvw h-dvh flex flex-col justify-center items-center overflow-x-hidden overflow-y-auto bg-light-primary dark:bg-dark-primary">
-    <div class="flex justify-center items-center gap-2 flex-col">
+  <body class="w-dvw h-dvh flex flex-col justify-center items-center overflow-x-hidden overflow-y_auto" style="background-color:var(--color-primary);transition:background-color 0.3s ease,color 0.3s ease;">
+    <div class="flex flex-col justify-center items-center gap-2">
       <form class="flex flex-col justify-center items-center gap-2 border rounded-lg p-5" action="/hello" method="POST">
-        <p class="text-light-tertiary dark:text-dark-tertiary">
+        <p style="color:var(--color-tertiary);">
           Form
         </p>
-        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
-        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
-        <input class="rounded-lg p-2.5 border bg-light-primary dark:bg-dark-primary text-light-tertiary dark:text-dark-tertiary" type="text"></input>
-        <button class="flex justify-center items-center gap-2 rounded-lg p-2.5 cursor-pointer hover:opacity-75 bg-light-secondary dark:bg-dark-secondary text-light-tertiary dark:text-dark-tertiary bg-blue-400 text-white" type="submit">
-          <span class="material-symbols-outlined">
+        <input class="rounded-lg p-2.5 border-1" style="background-color: var(--color-primary);color:var(--color-tertiary);" type="text"></input>
+        <input class="rounded-lg p-2.5 border-1" style="background-color: var(--color-primary);color:var(--color-tertiary);" type="text"></input>
+        <input class="rounded-lg p-2.5 border-1" style="background-color: var(--color-primary);color:var(--color-tertiary);" type="text"></input>
+        <button class="flex flex-row justify-center items-center gap-2 rounded-lg p-2.5 cursor-pointer hover:opacity-75 bg-blue-400 text-white" style="background-color:var(--color-secondary);color:var(--color-tertiary);" type="submit">
+          <span class="material-symbols-outlined" style="color:var(--color-tertiary);">
             upload
           </span>
-          <p class="text-light-tertiary dark:text-dark-tertiary">
+          <p style="color:var(--color-tertiary);">
             upload
           </p>
         </button>
       </form>
+      <select class="absolute bottom-5 left-5 rounded-lg p-2.5 border-1" id="ffdf3535_bcd1_4bac_894b_08704df36358" style="background-color:var(--color-primary);color:var(--color-tertiary);">
+        <option value="light">
+          Light
+        </option>
+        <option value="dark">
+          Dark
+        </option>
+        <option value="yellow-gray">
+          Yellow-gray
+        </option>
+        <option value="cream">
+          Cream
+        </option>
+        <script>
+          
+if (localStorage.getItem('themeMode')) {
+    document.documentElement.className = localStorage.getItem('themeMode');
+    document.getElementById('ffdf3535_bcd1_4bac_894b_08704df36358').value = localStorage.getItem('themeMode');
+} else {
+    document.documentElement.className = 'light';
+    document.getElementById('ffdf3535_bcd1_4bac_894b_08704df36358').value = 'light';
+}
+
+document.getElementById('ffdf3535_bcd1_4bac_894b_08704df36358').addEventListener('change', function() {
+    document.documentElement.className = document.getElementById('ffdf3535_bcd1_4bac_894b_08704df36358').value;
+    localStorage.setItem('themeMode', document.getElementById('ffdf3535_bcd1_4bac_894b_08704df36358').value);
+});
+
+        </script>
+      </select>
     </div>
   </body>
 </html>

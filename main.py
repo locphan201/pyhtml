@@ -30,7 +30,7 @@ def index():
                         )
                     ]
                 ),
-                ToggleButton()
+                SelectTheme()
             ])
         ]
     )

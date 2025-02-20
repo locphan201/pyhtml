@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
-from .theme import *
+from .theme import theme
+from .styles import *
 import uuid
 
 class Base:
@@ -76,7 +77,7 @@ class Base:
             return f"{indent}<{self._tag}{classes}{attrs}></{self._tag}>\n"
 
 class Title(Base):
-    def __init__(self, title: str = 'Document'):
+    def __init__(self, title: str = 'Document') -> None:
         super().__init__(tag='title', children=title)
 
 class Meta(Base):
@@ -92,46 +93,30 @@ class Script(Base):
         super().__init__(tag='script', **kwargs)
 
 class Style(Base):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(tag='style', **kwargs)
 
 class Head(Base):
     def __init__(self, **kwargs) -> None:
-        theme_color = f'''
-            --color-light-primary: {DEFAULT_LIGHT_COLOR_SCHEME.PRIMARY};
-            --color-light-secondary: {DEFAULT_LIGHT_COLOR_SCHEME.SECONDARY};
-            --color-light-tertiary: {DEFAULT_LIGHT_COLOR_SCHEME.TERTIARY};
-            --color-dark-primary: {DEFAULT_DARK_COLOR_SCHEME.PRIMARY};
-            --color-dark-secondary: {DEFAULT_DARK_COLOR_SCHEME.SECONDARY};
-            --color-dark-tertiary: {DEFAULT_DARK_COLOR_SCHEME.TERTIARY};
-        '''
-
         base_value = [
             Meta(charset='UTF-8'),
             Meta(name='viewport', content="width=device-width, initial-scale=1.0"),
             Link(rel='stylesheet', href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'),
             Script(src='https://unpkg.com/@tailwindcss/browser@4'),
-            Style(type='text/tailwindcss', children=f'@theme{{{theme_color}}}'),
+            Style(children=str(theme)),
             Title(title=kwargs.get('title', 'Document'))
         ]
-
-        try:
-            base_value.extend(children=kwargs.get('children', []))
-        except:
-            pass
-
+        base_value.extend(kwargs.get('children', []))
         super().__init__(tag='head', children=base_value, **kwargs)
 
 class Body(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = [
-            'w-dvw', 'h-dvh', 'flex', 'flex-col', 
-            'justify-center', 'items-center', 'overflow-x-hidden', 'overflow-y-auto',
-            'bg-light-primary', 'dark:bg-dark-primary'
-        ]
+        class_names = Styles().w('dvw').h('dvh').flex('col')
+        class_names = class_names.justify('center').items('center').overflow('x-hidden').overflow('y_auto').to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
-            tag='body', 
+            tag='body',
+            style='background-color:var(--color-primary);transition:background-color 0.3s ease,color 0.3s ease;',
             class_names=class_names,
             **kwargs
         )
@@ -169,23 +154,19 @@ class HTML(Base):
 
 class Text(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = ['text-light-tertiary', 'dark:text-dark-tertiary']
-        class_names.extend(kwargs.pop('class_names', []))
-        super().__init__(tag='p', class_names=class_names,**kwargs)
+        super().__init__(tag='p', style='color:var(--color-tertiary);', **kwargs)
 
 class Label(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = ['text-light-tertiary', 'dark:text-dark-tertiary']
-        class_names.extend(kwargs.pop('class_names', []))
-        super().__init__(tag='label', class_names=class_names,**kwargs)
+        super().__init__(tag='label', style='color:var(--color-tertiary);', **kwargs)
 
 class Span(Base):
     def __init__(self, **kwargs) -> None:
-        super().__init__(tag='span', **kwargs)
+        super().__init__(tag='span', style='color:var(--color-tertiary);', **kwargs)
 
 class Row(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = ['flex', 'justify-center', 'items-center', 'gap-2']
+        class_names = Styles().flex('row').justify('center').items('center').gap(2).to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='div',
@@ -193,25 +174,23 @@ class Row(Base):
             **kwargs
         )
 
-class Column(Row):
+class Column(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = ['flex-col']
+        class_names = Styles().flex('col').justify('center').items('center').gap(2).to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
+            tag='div',
             class_names=class_names,
             **kwargs
         )
 
 class Input(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = [
-            'rounded-lg', 'p-2.5', 'border',
-            'bg-light-primary', 'dark:bg-dark-primary',
-            'text-light-tertiary', 'dark:text-dark-tertiary'
-        ]
+        class_names = Styles().rounded('lg').p('2.5').border('1').to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='input', 
+            style='background-color: var(--color-primary);color:var(--color-tertiary);',
             class_names=class_names,
             **kwargs
         )
@@ -228,10 +207,11 @@ class Form(Base):
 
 class Anchor(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = ['cursor-pointer', 'text-light-tertiary', 'dark:text-dark-tertiary']
+        class_names = Styles().underline().cursor('pointer').to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='a', 
+            style='color:var(--color-tertiary);',
             class_names=class_names,
             **kwargs
         )
@@ -242,15 +222,12 @@ class A(Anchor):
 
 class Button(Base):
     def __init__(self, **kwargs) -> None:
-        class_names = [
-            'flex', 'justify-center', 'items-center', 'gap-2', 
-            'rounded-lg', 'p-2.5', 'cursor-pointer', 'hover:opacity-75',
-            'bg-light-secondary', 'dark:bg-dark-secondary',
-            'text-light-tertiary', 'dark:text-dark-tertiary'
-        ]
+        class_names = Styles().flex('row').justify('center').items('center').gap(2)
+        class_names = class_names.rounded('lg').p('2.5').cursor('pointer').hover('opacity-75').to_list()
         class_names.extend(kwargs.pop('class_names', []))
         super().__init__(
             tag='button', 
+            style='background-color:var(--color-secondary);color:var(--color-tertiary);',
             class_names=class_names,
             **kwargs
         )
@@ -265,13 +242,66 @@ class Icon(Span):
         )
 
 class Image(Base):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+
+class Select(Base):
+    def __init__(self, **kwargs) -> None:
+        id = kwargs.pop('id', str(uuid.uuid4()).replace('-', '_'))
+        class_names = Styles().rounded('lg').p('2.5').border('1').to_list()
+        class_names.extend(kwargs.pop('class_names', []))
+        items = kwargs.pop('items', [])
+        super().__init__(
+            id=id,
+            tag='select', 
+            style='background-color:var(--color-primary);color:var(--color-tertiary);',
+            class_names=class_names,
+            children=[Option(value=item) for item in items],
+            **kwargs
+        )
+
+class Option(Base):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(
+            tag='option',
+            class_names=kwargs.pop('class_names', []),
+            value=kwargs.get('value', ''),
+            children=kwargs.pop('value', '').replace('_', ' ').capitalize()
+        )
+
+class SelectTheme(Base):
+    def __init__(self, **kwargs) -> None:
+        id = kwargs.pop('id', str(uuid.uuid4()).replace('-', '_'))
+        class_names = Styles().absolute().bottom('5').left('5').rounded('lg').p('2.5').border('1').to_list()
+        class_names.extend(kwargs.pop('class_names', []))
+        items = [Option(value=item) for item in theme.keys]
+        items.append(Script(children=f'''
+if (localStorage.getItem('themeMode')) {{
+    document.documentElement.className = localStorage.getItem('themeMode');
+    document.getElementById('{id}').value = localStorage.getItem('themeMode');
+}} else {{
+    document.documentElement.className = 'light';
+    document.getElementById('{id}').value = 'light';
+}}
+
+document.getElementById('{id}').addEventListener('change', function() {{
+    document.documentElement.className = document.getElementById('{id}').value;
+    localStorage.setItem('themeMode', document.getElementById('{id}').value);
+}});
+'''))
+        super().__init__(
+            id=id,
+            tag='select', 
+            style='background-color:var(--color-primary);color:var(--color-tertiary);',
+            class_names=class_names,
+            children=items,
+            **kwargs
+        )
 
 class ToggleButton(Label):
     def __init__(self, value: str = '', class_names: List[str] = []):
         id = str(uuid.uuid4()).replace('-', '_')
-        temp = ['inline-flex', 'items-center', 'cursor-pointer']
+        temp = Styles().inline_flex().items('center').cursor('pointer').to_list()
         temp.extend(class_names)
         super().__init__(
             class_names=temp,
@@ -279,34 +309,25 @@ class ToggleButton(Label):
                 Input(
                     type='checkbox',
                     value='',
-                    class_names=['sr-only', 'peer'],
+                    class_names=Styles().sr_only().peer().to_list(),
                     id=id,
                 ),
                 Base(
                     tag='div',
-                    class_names=[
-                        'relative', 'w-11', 'h-6', 'bg-gray-200', 'peer-focus:outline-none', 'peer-focus:ring-4', 
-                        'peer-focus:ring-blue-300', 'dark:peer-focus:ring-blue-800', 'rounded-full', 'peer', 
-                        'dark:bg-gray-700', 'peer-checked:after:translate-x-full', 'rtl:peer-checked:after:-translate-x-full', 
-                        "peer-checked:after:border-white after:content-['']", 'after:absolute after:top-[2px]', 'after:start-[2px]', 
-                        'after:bg-white', 'after:border-gray-300', 'after:border', 'after:rounded-full', 'after:h-5', 'after:w-5', 
-                        'after:transition-all', 'dark:border-gray-600', 'peer-checked:bg-blue-600', 'dark:peer-checked:bg-blue-600'
-                    ],
+                    class_names=Styles().relative().w('11').h('6').bg('gray-200').other('peer-focus:outline-none').other('peer-focus:ring-4').other('peer-focus:ring-blue-300').rounded('full').peer().bg('gray-700').other('peer_checked:bg-blue-600').other('peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full').other("peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]").other('after:start-[2px] after:bg-white after:border-gray-300 after:border').other('after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600').to_list()
                 ),
                 Span(
-                    class_names=['ms-3', 'text-sm', 'font-medium', 'text-light-tertiary', 'dark:text-dark-tertiary'],
+                    class_names=Styles().text('sm').font('medium').other('ms-3').to_list(),
                     children=value
                 ),
                 Script(
                     children=f'''
 if (localStorage.getItem('darkMode') === 'enabled') {{
     document.documentElement.classList.add('dark');
-    document.getElementById("{id}").checked = true;
+    document.getElementById('{id}').checked = true;
 }}
-
-// Add an event listener for the checkbox toggle
-document.getElementById("{id}").addEventListener("change", function() {{
-    if (document.getElementById("{id}").checked) {{
+document.getElementById('{id}').addEventListener('change', function() {{
+    if (document.getElementById('{id}').checked) {{
         document.documentElement.classList.add('dark');
         localStorage.setItem('darkMode', 'enabled');
     }} else {{
