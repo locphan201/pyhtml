@@ -10,7 +10,6 @@ CORS(app)
 def index():
     html = HTML(
         title='Document',
-        class_names=['dark'],
         children=[
             Column(children=[
                 Form(
@@ -30,7 +29,8 @@ def index():
                             ]
                         )
                     ]
-                )
+                ),
+                ToggleButton()
             ])
         ]
     )
